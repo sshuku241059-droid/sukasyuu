@@ -9,6 +9,7 @@ let paddleSpeed;
 let paddleWidth;
 let paddleHeight;
 let ballSpin;
+let ballRotation;
 let gravity;
 let paddleVelocity;
 let paddleAcceleration;
@@ -25,8 +26,8 @@ function setup() {
     createCanvas(600,450);
     ballX=width/2;
     ballY=height/2;
-    ballSpeedX=15;
-    ballSpeedY=-15;
+    ballSpeedX=10;
+    ballSpeedY=-10;
     ballRadius=15;
     paddleX=width/2;
     paddleY=height-30;
@@ -34,6 +35,7 @@ function setup() {
     paddleWidth=150;
     paddleHeight=15;
     ballSpin=0;
+    ballRotation=0;
     gravity=0.3;
     paddleVelocity=0;
     paddleAcceleration=0.8;
@@ -42,14 +44,26 @@ function setup() {
     lineY=46;
     lineWidth=width;
     lineHeight=8;
+    score=0;
+    text1="";
+    text("GAME OVER",100,100);
 }
 
 function draw() {
     background(0);
+   
+    if(keyIsDown(32)){
+        score=0;
+        setup();
+    }
 
-    if (lineX<ballX &&
-        ballX<lineWidth+lineX&&
-        lineY<ballY &&
+    text1="Score:"+score
+    fill(" white");
+    textAlign(LEFT);
+    textSize(25);
+    text(text1,10,30);
+
+    if (lineY<ballY &&
         ballY<lineHeight+lineY){
             ballSpeedY=-ballSpeedY;
     }
@@ -60,6 +74,9 @@ function draw() {
     ballSpeedX=ballSpeedX+ballSpin*0.05;
     // スピンを徐々に減らす（空気抵抗）
     ballSpin=ballSpin*0.98;
+    
+    // ボール回転を更新
+    ballRotation=ballRotation+ballSpin*2;
 
     ballX=ballX+ballSpeedX;
     ballY=ballY+ballSpeedY;
@@ -95,6 +112,7 @@ function draw() {
             // パドルの位置によってスピンを付与
             let paddleCenter=paddleX+paddleWidth/2;
             ballSpin=(ballX-paddleCenter)/30;
+            score=score+1;
         }
 
     if (width<ballX+ballRadius) {
@@ -121,8 +139,21 @@ function draw() {
         text("GAME OVER",width/2,height/2);
     }
 
+    // ボールの描画
+    fill(255);
     circle(ballX,ballY,ballRadius*2);
+    
+    // スピンの視覚化：回転する線を描画
+    push();
+    translate(ballX, ballY);
+    rotate(ballRotation);
+    stroke(0);
+    strokeWeight(2);
+    line(0, -ballRadius, 0, ballRadius);
+    pop();
+    
     rect(paddleX,paddleY,paddleWidth,paddleHeight);
+    rect(lineX,lineY,lineWidth,lineHeight);
 }
 
 
